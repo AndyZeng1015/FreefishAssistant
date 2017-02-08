@@ -1,5 +1,6 @@
 package com.zyn.freefishassistant.beans;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,6 +15,10 @@ public class RequestDataBean {
     private List<GoodsDetailBean> mGoodsDetailBeanList;
     private int totalPage;//总页数
     private int currentPage;//当前页数
+
+    public RequestDataBean(){
+        mGoodsDetailBeanList = new ArrayList<GoodsDetailBean>();
+    }
 
     public List<GoodsDetailBean> getGoodsDetailBeanList() {
         return mGoodsDetailBeanList;

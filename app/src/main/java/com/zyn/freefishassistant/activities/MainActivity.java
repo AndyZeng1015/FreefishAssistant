@@ -3,10 +3,11 @@ package com.zyn.freefishassistant.activities;
 import android.graphics.Color;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.zyn.freefishassistant.R;
@@ -23,6 +24,8 @@ public class MainActivity extends BaseActivity {
     private DrawerLayout dl_layout;
     private ActionBarDrawerToggle mDrawerToggle;
 
+    private Map<String, HashMap<String, String>> searchData = new HashMap<String, HashMap<String, String>>();//搜索的数据
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,10 +41,26 @@ public class MainActivity extends BaseActivity {
                 Map<String, String> data = new HashMap<String, String>();
                 data.put("q", "iphone6s");
                 data.put("ist", "0");
+                data.put("divisionId", "510100");
                 data.put("spm", "2007.1000337.6.2.nEgtu7");
                 JsoupUtils.getEntityData(data);
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.refresh){
+            //重新获取数据
+
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void initData() {
@@ -52,6 +71,9 @@ public class MainActivity extends BaseActivity {
 
         dl_layout.addDrawerListener(mDrawerToggle);
         mDrawerToggle.syncState();
+
+        //进入主界面后读取配置信息
+
     }
 
     private void initView() {
