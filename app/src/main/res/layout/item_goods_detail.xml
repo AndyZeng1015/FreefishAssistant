@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal"
+              android:layout_width="match_parent"
+              android:layout_height="100dp"
+    android:gravity="center_vertical">
+
+    <ImageView
+        android:id="@+id/iv_img"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_margin="8dp"
+        android:src="@mipmap/ic_launcher"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_marginRight="8dp">
+
+        <LinearLayout
+            android:id="@+id/ll_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_title"
+                android:textSize="16sp"
+                android:text="iphone6s 全网通"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:maxLines="2"
+                android:layout_height="40dp"/>
+
+            <TextView
+                android:id="@+id/tv_price"
+                android:textColor="#ff0000"
+                android:text="￥1800"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_below="@id/ll_title"
+            android:id="@+id/tv_desc"
+            android:layout_marginTop="3dp"
+            android:textSize="12sp"
+            android:maxLines="4"
+            android:text="同时使用过多的字体尺寸和样式可以很轻易的毁掉布局。字体排版的缩放是包含了有限个字体尺寸的集合，并且他们能够良好的适应布局结构。最基本的样式集合就是基于12、14、16、20和34号的字体排版缩放。"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+    </RelativeLayout>
+
+</LinearLayout>

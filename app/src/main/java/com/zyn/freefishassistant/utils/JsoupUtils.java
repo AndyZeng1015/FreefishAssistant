@@ -1,11 +1,8 @@
 package com.zyn.freefishassistant.utils;
 
-import android.os.SystemClock;
 import android.util.Log;
 
-import com.zyn.freefishassistant.base.MyApplication;
 import com.zyn.freefishassistant.beans.GoodsDetailBean;
-import com.zyn.freefishassistant.beans.RequestDataBean;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -14,6 +11,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -28,10 +26,14 @@ public class JsoupUtils {
 
     public static String baseUrl = "https://s.2.taobao.com/list/list.htm";
 
-    public static RequestDataBean getEntityData(Map<String, String> data){
+    /**
+     * 获取商品列表，最多9条
+     * @param data 参数数据
+     * @return
+     */
+    public static List<GoodsDetailBean> getEntityData(Map<String, String> data){
 
-        RequestDataBean requestDataBean = new RequestDataBean();
-        requestDataBean.setGoodsDetailBeanList(new ArrayList<GoodsDetailBean>());
+        List<GoodsDetailBean> goodsDetailBeanList = new ArrayList<GoodsDetailBean>();
 
         String url = baseUrl + "?t="+ System.currentTimeMillis();
 
@@ -40,13 +42,21 @@ public class JsoupUtils {
             String value = entry.getValue();
             url += "&"+key + "=" + value;
         }
+
+        Log.e("TAG", "url:"+url);
+
         try {
             Document doc = Jsoup.connect(url).get();
 
             Elements elements = doc.getElementsByClass("item-info-wrapper item-idle clearfix");
-
+            int count = 0;
+            if(elements.size() >= 9){
+                count = 9;
+            }else{
+                count = elements.size();
+            }
             //每一类只取前9个
-            for (int i = 0; i < 9; i++) {
+            for (int i = 0; i < count; i++) {
                 Element element = elements.get(i);
                 GoodsDetailBean goodsDetailBean = new GoodsDetailBean();
                 //商品列表图片
@@ -70,18 +80,13 @@ public class JsoupUtils {
                 goodsDetailBean.setTitle(title);
                 goodsDetailBean.setUrl(goods_url);
 
-                requestDataBean.getGoodsDetailBeanList().add(goodsDetailBean);
+                goodsDetailBeanList.add(goodsDetailBean);
             }
-
-            int currentPage = Integer.parseInt(doc.getElementsByClass("paginator-curr").get(0).text());
-            int totalPage = Integer.parseInt(doc.getElementsByClass("paginator-count").get(0).text().replace("共", "").replace("页", ""));
-            requestDataBean.setCurrentPage(currentPage);
-            requestDataBean.setTotalPage(totalPage);
 
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
-        return requestDataBean;
+        return goodsDetailBeanList;
     }
 }

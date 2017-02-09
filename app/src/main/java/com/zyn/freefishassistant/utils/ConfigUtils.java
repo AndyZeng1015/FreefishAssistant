@@ -82,7 +82,7 @@ public class ConfigUtils {
      * @param mContext
      * @param configBean
      */
-    public void saveSearchConfig(Context mContext, ConfigBean configBean){
+    public static void saveSearchConfig(Context mContext, ConfigBean configBean){
         DBManager dbManager = DBManager.getInstance(mContext, "fishAssistant");
         SQLiteTemplate template = SQLiteTemplate.getInstance(dbManager, false);
 
@@ -123,7 +123,7 @@ public class ConfigUtils {
      * 删除搜索配置信息
      * @param mContext
      */
-    public void deleteSearchConfigByKeyWord(Context mContext, String key){
+    public static void deleteSearchConfigByKeyWord(Context mContext, String key){
         DBManager dbManager = DBManager.getInstance(mContext, "fishAssistant");
         SQLiteTemplate template = SQLiteTemplate.getInstance(dbManager, false);
 
@@ -147,7 +147,7 @@ public class ConfigUtils {
      * @param mContext
      * @param configBean
      */
-    public void updateSearchConfigByOldKey(Context mContext, ConfigBean configBean, String oldKey){
+    public static void updateSearchConfigByOldKey(Context mContext, ConfigBean configBean, String oldKey){
         DBManager dbManager = DBManager.getInstance(mContext, "fishAssistant");
         SQLiteTemplate template = SQLiteTemplate.getInstance(dbManager, false);
 
