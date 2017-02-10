@@ -1,5 +1,12 @@
 package com.zyn.freefishassistant.utils;
 
+import com.zyn.freefishassistant.beans.ConfigBean;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * 文件名 Contast
  * 存放常量
@@ -10,6 +17,5 @@ package com.zyn.freefishassistant.utils;
 
 public class Contast {
     public static final String BASE_PATH = android.os.Environment.getExternalStorageDirectory().getAbsolutePath()+"/Android/data/com.zyn.freefishAssistant/";//存放位置的基础路径
-    public static final String SEPARATE_IN = "@@@";//每个商品内部分隔
-    public static final String SEPARATE_OUT = "***";//商品之间的分隔
+    public static List<HashMap<String, String>> searchData = new ArrayList<HashMap<String, String>>();//搜索配置数据
 }
