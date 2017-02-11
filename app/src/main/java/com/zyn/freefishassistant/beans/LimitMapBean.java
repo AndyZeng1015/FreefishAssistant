@@ -1,5 +1,8 @@
 package com.zyn.freefishassistant.beans;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * 文件名 LimitMapBean
  * 描述
@@ -8,7 +11,7 @@ package com.zyn.freefishassistant.beans;
  * 版权声明 Created by ZengYinan
  */
 
-public class LimitMapBean {
+public class LimitMapBean implements Parcelable {
     private String id;
     private String keyword_id;
     private String key;
@@ -45,4 +48,39 @@ public class LimitMapBean {
     public void setValue(String value) {
         this.value = value;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.id);
+        dest.writeString(this.keyword_id);
+        dest.writeString(this.key);
+        dest.writeString(this.value);
+    }
+
+    public LimitMapBean() {
+    }
+
+    protected LimitMapBean(Parcel in) {
+        this.id = in.readString();
+        this.keyword_id = in.readString();
+        this.key = in.readString();
+        this.value = in.readString();
+    }
+
+    public static final Parcelable.Creator<LimitMapBean> CREATOR = new Parcelable.Creator<LimitMapBean>() {
+        @Override
+        public LimitMapBean createFromParcel(Parcel source) {
+            return new LimitMapBean(source);
+        }
+
+        @Override
+        public LimitMapBean[] newArray(int size) {
+            return new LimitMapBean[size];
+        }
+    };
 }

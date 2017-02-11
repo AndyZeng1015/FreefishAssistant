@@ -1,5 +1,8 @@
 package com.zyn.freefishassistant.beans;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * 文件名 KeyMapBean
  * 描述
@@ -8,7 +11,7 @@ package com.zyn.freefishassistant.beans;
  * 版权声明 Created by ZengYinan
  */
 
-public class KeyMapBean {
+public class KeyMapBean implements Parcelable {
     private String id;
     private String keyword;
 
@@ -27,4 +30,35 @@ public class KeyMapBean {
     public void setKeyword(String keyword) {
         this.keyword = keyword;
     }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.id);
+        dest.writeString(this.keyword);
+    }
+
+    public KeyMapBean() {
+    }
+
+    protected KeyMapBean(Parcel in) {
+        this.id = in.readString();
+        this.keyword = in.readString();
+    }
+
+    public static final Parcelable.Creator<KeyMapBean> CREATOR = new Parcelable.Creator<KeyMapBean>() {
+        @Override
+        public KeyMapBean createFromParcel(Parcel source) {
+            return new KeyMapBean(source);
+        }
+
+        @Override
+        public KeyMapBean[] newArray(int size) {
+            return new KeyMapBean[size];
+        }
+    };
 }

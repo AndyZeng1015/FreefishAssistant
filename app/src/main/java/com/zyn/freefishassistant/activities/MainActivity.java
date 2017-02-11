@@ -6,6 +6,11 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
+import android.os.SystemClock;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
@@ -29,7 +34,10 @@ import com.zyn.freefishassistant.beans.GoodsDetailBean;
 import com.zyn.freefishassistant.beans.ItemParams;
 import com.zyn.freefishassistant.beans.LimitMapBean;
 import com.zyn.freefishassistant.utils.ConfigUtils;
+import com.zyn.freefishassistant.utils.Contast;
 import com.zyn.freefishassistant.utils.JsoupUtils;
+import com.zyn.freefishassistant.utils.SearchDataUtils;
+import com.zyn.freefishassistant.utils.SharedPreferencesUtils;
 import com.zyn.freefishassistant.utils.ToastUtil;
 import com.zyn.freefishassistant.widget.DividerLine;
 
@@ -39,6 +47,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 public class MainActivity extends BaseActivity {
@@ -48,11 +59,14 @@ public class MainActivity extends BaseActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private RecyclerView rlv_list;
     private TextView tv_nodata;
+    private NavigationView ngv_menu;
 
     private List<GoodsDetailBean> mGoodsDetailBeanList = new ArrayList<>();
 
     private GoodsListAdapter mGoodsListAdapter;
     private ProgressDialog mDialog;
+
+    private Lock lock;//锁对象
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,12 +82,12 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(GoodsDetailBean goodsDetailBean, int pos) {
                 Intent intent = new Intent("android.intent.action.MAIN");
-                ComponentName componentName = new ComponentName("com.taobao.fleamarket", "com.taobao.fleamarket.detail.activity.ItemDetailActivity");
+                ComponentName componentName = new ComponentName("com.taobao.idlefish", "com.taobao.fleamarket.detail.activity.ItemDetailActivity");
                 intent.setComponent(componentName);
                 ItemParams itemParams = new ItemParams();
                 itemParams.setItemId(goodsDetailBean.getGoodsId());
                 intent.putExtra("ItemParams", itemParams);
-                String url = "https://h5.m.taobao.com/2shou/newDetail.html?page=item&id=%d";
+                String url = "http://h5.xianyu.tb.cn/xianyu/share-item.html?itemId=%d";
                 url = String.format(url, Long.valueOf(goodsDetailBean.getGoodsId()));
                 Uri uri = Uri.parse(url);
                 intent.setData(uri);
@@ -84,54 +98,74 @@ public class MainActivity extends BaseActivity {
                     e.printStackTrace();
                     ToastUtil.showToast(mContext, "安装闲鱼即可跳转app直接购买商品");
                     Intent webIntent = new Intent(MainActivity.this, WebViewActivity.class);
+                    url = "https://h5.m.taobao.com/2shou/newDetail.html?page=item&id="+ goodsDetailBean.getGoodsId();
                     webIntent.putExtra("url", url);
                     startActivityForResult(webIntent, 200);
                 }
             }
         });
+
+        ngv_menu.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                item.setCheckable(false);
+                switch (item.getItemId()){
+                    case R.id.manager:
+                        //监控管理
+                        startActivity(LimitManagerActivity.class, false);
+                        break;
+                    case R.id.add:
+                        //添加监控
+                        startActivity(AddLimitActivity.class, false);
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
+
     }
 
-    private void loadData() {
-        //进入主界面后读取配置信息
-//        mGoodsDetailBeanList.clear();
-//        List<ConfigBean> configBeanList = ConfigUtils.getSearchConfig(mContext);
-//        for(ConfigBean configBean : configBeanList){
-//            Map<String, String> searchData = new HashMap<String, String>();
-//            searchData.put("p", configBean.getKeyMapBean().getKeyword());
-//            for(LimitMapBean limitMapBean : configBean.getLimitMapBeen()){
-//                searchData.put(limitMapBean.getKey(), limitMapBean.getValue());
-//            }
-//            mGoodsDetailBeanList.addAll(JsoupUtils.getEntityData(searchData));
-//        }
-        new AsyncTask<Void, Void, List<GoodsDetailBean>>(){
-
-            @Override
-            protected void onPreExecute() {
-                mDialog.show();
-            }
-
-            @Override
-            protected List<GoodsDetailBean> doInBackground(Void... voids) {
-                Map<String, String> data = new HashMap<String, String>();
-                data.put("q", "iphone6s");
-                data.put("ist", "0");
-                data.put("spm", "2007.1000337.6.2.nEgtu7");
-                List<GoodsDetailBean> goodsDetailBeanList = JsoupUtils.getEntityData(data);
-                return goodsDetailBeanList;
-            }
-
-            @Override
-            protected void onPostExecute(List<GoodsDetailBean> goodsDetailBeen) {
-                if(goodsDetailBeen.size() > 0){
+    private Handler mHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            if(msg.what == 201){
+                if(mGoodsDetailBeanList.size()>0){
                     tv_nodata.setVisibility(View.GONE);
                 }else{
                     tv_nodata.setVisibility(View.VISIBLE);
                 }
-                //Collections.sort(goodsDetailBeen);
-                mGoodsListAdapter.updateListDataAndRefresh(goodsDetailBeen);
+                mGoodsListAdapter.updateListDataAndRefresh(mGoodsDetailBeanList);
                 mDialog.dismiss();
             }
-        }.execute();
+        }
+    };
+
+    private void loadData() {
+        if(Contast.searchData.size() > 0){
+
+            mGoodsDetailBeanList.clear();
+            mDialog.show();
+
+            for(final HashMap<String, String> map : SearchDataUtils.parseData(Contast.searchData)){
+                //读取上次搜索的第一个id
+                MyApplication.getInstance().execRunnable(new Runnable() {
+                    @Override
+                    public void run() {
+                        String lastIds = SharedPreferencesUtils.getString(mContext, "FreefishAssistant", map.get("q"), "");
+                        List<GoodsDetailBean> goodsDetailBeanList = JsoupUtils.getEntityData(mContext, map, lastIds);
+                        Log.e("TAG",map.get("q")+"：执行完成");
+                        if(goodsDetailBeanList != null && goodsDetailBeanList.size()>0){
+                            //保存这次搜索的第一个id
+                            SharedPreferencesUtils.saveString(mContext, "FreefishAssistant", map.get("q"), goodsDetailBeanList.get(0).getGoodsId());
+                            mGoodsDetailBeanList.addAll(goodsDetailBeanList);
+                        }
+                        mHandler.sendEmptyMessage(201);
+                    }
+                });
+            }
+        }
     }
 
     @Override
@@ -168,11 +202,13 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initView() {
+        lock = new ReentrantLock();
         setContentView(R.layout.activity_main);
         tl_bar = (Toolbar) findViewById(R.id.tl_bar);
         dl_layout = (DrawerLayout) findViewById(R.id.dl_layout);
         rlv_list = (RecyclerView) findViewById(R.id.rlv_list);
         tv_nodata = (TextView) findViewById(R.id.tv_nodata);
+        ngv_menu = (NavigationView) findViewById(R.id.ngv_menu);
         rlv_list.setLayoutManager(new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false));
         rlv_list.setHasFixedSize(true);
         //添加分割线

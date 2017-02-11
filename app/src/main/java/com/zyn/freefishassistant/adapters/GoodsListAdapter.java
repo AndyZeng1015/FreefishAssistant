@@ -84,7 +84,7 @@ public class GoodsListAdapter extends RecyclerView.Adapter<GoodsListAdapter.Good
         }
 
         public void setData(final GoodsDetailBean goodsDetailBean, final int position){
-            Picasso.with(mContext).load("http://"+goodsDetailBean.getList_imgUrl()).resize(DensityUtil.dip2px(mContext, 100), DensityUtil.dip2px(mContext, 100)).centerCrop().into(iv_img);
+            Picasso.with(mContext).load("http://"+goodsDetailBean.getList_imgUrl()).placeholder(R.drawable.icon_default).resize(DensityUtil.dip2px(mContext, 100), DensityUtil.dip2px(mContext, 100)).centerCrop().into(iv_img);
             tv_title.setText(goodsDetailBean.getTitle());
             tv_price.setText("￥"+goodsDetailBean.getPrice());
             tv_desc.setText(goodsDetailBean.getList_desc());

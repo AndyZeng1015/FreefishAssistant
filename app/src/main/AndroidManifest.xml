@@ -27,6 +27,9 @@
         </activity>
         <activity android:name=".activities.MainActivity"></activity>
         <activity android:name=".activities.WebViewActivity"></activity>
+        <activity android:name=".activities.LimitManagerActivity"></activity>
+        <activity android:name=".activities.AddLimitActivity"></activity>
+        <activity android:name=".activities.UpdateLimitActivity"></activity>
     </application>
 
 </manifest>

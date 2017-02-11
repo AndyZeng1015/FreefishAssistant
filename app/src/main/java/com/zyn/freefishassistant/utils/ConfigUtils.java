@@ -1,5 +1,6 @@
 package com.zyn.freefishassistant.utils;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -90,7 +91,7 @@ public class ConfigUtils {
         boolean isExit = template.isExistsByField("keywords_map", "content", configBean.getKeyMapBean().getKeyword());
 
         if(isExit){
-            ToastUtil.showToast(mContext, "该关键字已存在！");
+            ToastUtil.showToastOnThread((Activity) mContext, "该关键字已存在！");
             return;
         }
 
@@ -123,23 +124,14 @@ public class ConfigUtils {
      * 删除搜索配置信息
      * @param mContext
      */
-    public static void deleteSearchConfigByKeyWord(Context mContext, String key){
+    public static void deleteSearchConfigById(Context mContext, String id){
         DBManager dbManager = DBManager.getInstance(mContext, "fishAssistant");
         SQLiteTemplate template = SQLiteTemplate.getInstance(dbManager, false);
 
-        //获取到关键字的id
-        String keyword_id = template.queryForObject(new SQLiteTemplate.RowMapper<String>(){
-
-            @Override
-            public String mapRow(Cursor cursor, int index) {
-                return cursor.getString(cursor.getColumnIndex("_id"));
-            }
-        }, "select _id from keywords_map where content=?", new String[]{key});
-
         //删除限制
-        template.deleteByField("limit_map", "keyword_id", keyword_id);
+        template.deleteByField("limit_map", "keyword_id", id);
         //删除关键词
-        template.deleteById("keywords_map", keyword_id);
+        template.deleteById("keywords_map", id);
     }
 
     /**
@@ -147,18 +139,12 @@ public class ConfigUtils {
      * @param mContext
      * @param configBean
      */
-    public static void updateSearchConfigByOldKey(Context mContext, ConfigBean configBean, String oldKey){
+    public static void updateSearchConfigByOldKey(Context mContext, ConfigBean configBean){
         DBManager dbManager = DBManager.getInstance(mContext, "fishAssistant");
         SQLiteTemplate template = SQLiteTemplate.getInstance(dbManager, false);
 
         //获取到关键字的id
-        String keyword_id = template.queryForObject(new SQLiteTemplate.RowMapper<String>(){
-
-            @Override
-            public String mapRow(Cursor cursor, int index) {
-                return cursor.getString(cursor.getColumnIndex("_id"));
-            }
-        }, "select _id from keywords_map where content=?", new String[]{oldKey});
+        String keyword_id = configBean.getKeyMapBean().getId();
 
         //先删除限制
         template.deleteByField("limit_map", "keyword_id", keyword_id);

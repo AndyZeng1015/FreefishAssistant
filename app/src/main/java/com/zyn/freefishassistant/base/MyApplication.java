@@ -26,6 +26,14 @@ public class MyApplication extends Application {
         es.execute(r);
     }
 
+    /**
+     * 得到线程池
+     * @return
+     */
+    public ExecutorService getThreadPool(){
+        return es;
+    }
+
     private static MyApplication instance;
     public static MyApplication getInstance(){
         return instance;

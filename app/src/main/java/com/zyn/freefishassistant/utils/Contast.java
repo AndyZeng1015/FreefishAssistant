@@ -17,5 +17,5 @@ import java.util.Map;
 
 public class Contast {
     public static final String BASE_PATH = android.os.Environment.getExternalStorageDirectory().getAbsolutePath()+"/Android/data/com.zyn.freefishAssistant/";//存放位置的基础路径
-    public static List<HashMap<String, String>> searchData = new ArrayList<HashMap<String, String>>();//搜索配置数据
+    public static List<ConfigBean> searchData = new ArrayList<ConfigBean>();//搜索配置数据
 }

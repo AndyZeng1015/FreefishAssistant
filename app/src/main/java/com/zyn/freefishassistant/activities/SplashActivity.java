@@ -7,6 +7,16 @@ import android.support.annotation.Nullable;
 
 import com.zyn.freefishassistant.R;
 import com.zyn.freefishassistant.base.BaseActivity;
+import com.zyn.freefishassistant.base.MyApplication;
+import com.zyn.freefishassistant.beans.ConfigBean;
+import com.zyn.freefishassistant.beans.LimitMapBean;
+import com.zyn.freefishassistant.utils.ConfigUtils;
+import com.zyn.freefishassistant.utils.Contast;
+import com.zyn.freefishassistant.utils.JsoupUtils;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 文件名 SplashActivity
@@ -29,12 +39,14 @@ public class SplashActivity extends BaseActivity {
     }
 
     private void loadMain(){
-        new Thread(){
+        MyApplication.getInstance().execRunnable(new Runnable() {
+            @Override
             public void run() {
-                //睡眠3秒
-                SystemClock.sleep(3000);
+                //加载搜索数据
+                Contast.searchData.clear();
+                Contast.searchData = ConfigUtils.getSearchConfig(mContext);
                 startActivity(MainActivity.class, true);
-            };
-        }.start();
+            }
+        });
     }
 }

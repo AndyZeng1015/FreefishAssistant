@@ -10,10 +10,5 @@
             android:icon="@drawable/add"
             android:title="添加监控" >
         </item>
-        <item
-            android:id="@+id/setting"
-            android:icon="@drawable/setting"
-            android:title="设置" >
-        </item>
     </group>
 </menu>
