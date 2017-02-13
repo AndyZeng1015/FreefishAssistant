@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">FreefishAssistant</string>
+    <string name="app_name">闲鱼监控助手（手动版）</string>
     <string name="open">open</string>
     <string name="close">close</string>
 </resources>
