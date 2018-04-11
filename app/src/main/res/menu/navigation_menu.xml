@@ -10,5 +10,9 @@
             android:icon="@drawable/add"
             android:title="添加监控" >
         </item>
+        <item
+            android:id="@+id/cookie_setting"
+            android:icon="@drawable/manager"
+            android:title="cookie管理" />
     </group>
 </menu>
